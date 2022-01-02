@@ -207,6 +207,10 @@ To use Azure Blob Storage, you'll need your Azure connection string and an _exis
 environment variable to your connection string, and `SCCACHE_AZURE_BLOB_CONTAINER` to the name of the container to use.  Note that sccache will not create
 the container for you - you'll need to do that yourself.
 
+### GitHub Actions Cache
+To use GitHub Actions Cache provided by the GitHub-hosted runners, set the `SCCACHE_GHA` variable.
+The cache API endpoint and token will be picked up from the runner provided environment.
+
 **Important:** The environment variables are only taken into account when the server starts, i.e. only on the first run.
 
 ---

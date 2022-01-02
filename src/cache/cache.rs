@@ -17,6 +17,8 @@ use crate::cache::azure::AzureBlobCache;
 use crate::cache::disk::DiskCache;
 #[cfg(feature = "gcs")]
 use crate::cache::gcs::{self, GCSCache, GCSCredentialProvider, RWMode, ServiceAccountInfo};
+#[cfg(feature = "gha")]
+use crate::cache::gha::GitHubActionsCache;
 #[cfg(feature = "memcached")]
 use crate::cache::memcached::MemcachedCache;
 #[cfg(feature = "redis")]
@@ -399,6 +401,17 @@ pub fn storage_from_config(config: &Config, pool: &tokio::runtime::Handle) -> Ar
                         return Arc::new(s);
                     }
                     Err(e) => warn!("Failed to create S3Cache: {:?}", e),
+                }
+            }
+            CacheType::GHA(config::GHACacheConfig) => {
+                debug!("Trying GitHub Actions Cache");
+                #[cfg(feature = "azure")]
+                match GitHubActionsCache::new() {
+                    Ok(storage) => {
+                        trace!("Using GitHubActionsCache");
+                        return Arc::new(storage);
+                    }
+                    Err(e) => warn!("Failed to create GitHubActionsCache: {:?}", e),
                 }
             }
         }

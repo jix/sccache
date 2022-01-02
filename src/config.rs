@@ -202,6 +202,10 @@ pub struct S3CacheConfig {
     pub key_prefix: String,
 }
 
+#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct GHACacheConfig;
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum CacheType {
     Azure(AzureCacheConfig),
@@ -209,6 +213,7 @@ pub enum CacheType {
     Memcached(MemcachedCacheConfig),
     Redis(RedisCacheConfig),
     S3(S3CacheConfig),
+    GHA(GHACacheConfig),
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
@@ -220,6 +225,7 @@ pub struct CacheConfigs {
     pub memcached: Option<MemcachedCacheConfig>,
     pub redis: Option<RedisCacheConfig>,
     pub s3: Option<S3CacheConfig>,
+    pub gha: Option<GHACacheConfig>,
 }
 
 impl CacheConfigs {
@@ -233,6 +239,7 @@ impl CacheConfigs {
             memcached,
             redis,
             s3,
+            gha,
         } = self;
 
         let caches = s3
@@ -242,6 +249,7 @@ impl CacheConfigs {
             .chain(memcached.map(CacheType::Memcached))
             .chain(gcs.map(CacheType::GCS))
             .chain(azure.map(CacheType::Azure))
+            .chain(gha.map(CacheType::GHA))
             .collect();
         let fallback = disk.unwrap_or_else(Default::default);
 
@@ -257,6 +265,7 @@ impl CacheConfigs {
             memcached,
             redis,
             s3,
+            gha,
         } = other;
 
         if azure.is_some() {
@@ -276,6 +285,9 @@ impl CacheConfigs {
         }
         if s3.is_some() {
             self.s3 = s3
+        }
+        if gha.is_some() {
+            self.gha = gha
         }
     }
 }
@@ -520,6 +532,8 @@ fn config_from_env() -> EnvConfig {
         .ok()
         .map(|_| AzureCacheConfig);
 
+    let gha = env::var("SCCACHE_GHA").ok().map(|_| GHACacheConfig);
+
     let disk_dir = env::var_os("SCCACHE_DIR").map(PathBuf::from);
     let disk_sz = env::var("SCCACHE_CACHE_SIZE")
         .ok()
@@ -541,6 +555,7 @@ fn config_from_env() -> EnvConfig {
         memcached,
         redis,
         s3,
+        gha,
     };
 
     EnvConfig { cache }

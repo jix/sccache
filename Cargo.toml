@@ -63,6 +63,7 @@ regex = "1"
 reqwest = { version = "0.11", features = ["json", "blocking"], optional = true }
 retry = "1"
 ring = { version = "0.16", optional = true, features = ["std"] }
+rust-actions-cache-api = { version = "0.1.1", optional = true }
 sha-1 = { version = "0.9", optional = true }
 sha2 = { version = "0.9", optional = true }
 serde = "1.0"
@@ -118,12 +119,13 @@ features = [
 
 [features]
 default = ["all"]
-all = ["dist-client", "redis", "s3", "memcached", "gcs", "azure"]
+all = ["dist-client", "redis", "s3", "memcached", "gcs", "azure", "gha"]
 azure = ["chrono", "hyper", "hyperx", "reqwest", "url", "hmac", "md-5", "sha2"]
 s3 = ["chrono", "hyper", "hyperx", "reqwest", "simple-s3", "hmac", "sha-1"]
 simple-s3 = []
 gcs = ["chrono", "hyper", "hyperx", "percent-encoding", "reqwest", "ring", "untrusted", "url"]
 memcached = ["memcached-rs"]
+gha = ["rust-actions-cache-api"]
 native-zlib = []
 # Enable features that require unstable features of Nightly Rust.
 unstable = []
