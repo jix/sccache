@@ -403,10 +403,10 @@ pub fn storage_from_config(config: &Config, pool: &tokio::runtime::Handle) -> Ar
                     Err(e) => warn!("Failed to create S3Cache: {:?}", e),
                 }
             }
-            CacheType::GHA(config::GHACacheConfig) => {
+            CacheType::GHA(config::GHACacheConfig { ref key_space }) => {
                 debug!("Trying GitHub Actions Cache");
-                #[cfg(feature = "azure")]
-                match GitHubActionsCache::new() {
+                #[cfg(feature = "gha")]
+                match GitHubActionsCache::new(key_space) {
                     Ok(storage) => {
                         trace!("Using GitHubActionsCache");
                         return Arc::new(storage);

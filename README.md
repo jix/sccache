@@ -211,6 +211,8 @@ the container for you - you'll need to do that yourself.
 To use GitHub Actions Cache provided by the GitHub-hosted runners, set the `SCCACHE_GHA` variable.
 The cache API endpoint and token will be picked up from the runner provided environment.
 
+Additionally you can set the `SCCACHE_GHA_KEY_SPACE` variable to an arbitrary string to isolate different sccache instance from each other. A sccache instance will only retrieve cached results stored using the same setting of this variable. The default value is the empty string.
+
 **Important:** The environment variables are only taken into account when the server starts, i.e. only on the first run.
 
 ---

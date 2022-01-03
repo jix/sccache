@@ -15,24 +15,29 @@
 
 use crate::cache::{Cache, CacheRead, CacheWrite, Storage};
 use crate::errors::*;
+use crate::util::Digest;
 use std::io::Cursor;
 use std::time::{Duration, Instant};
 use uuid::Uuid;
 
-/// Blake3 hash of "sccache gha v1"
-static KEY_SPACE: &str = "ec327fb452080d07d2c893885ea7759eeea5a36891273aebd6ef0677a99dc0eb";
-
 /// A cache that stores entries in the GitHub Actions Cache.
 pub struct GitHubActionsCache {
     client: rust_actions_cache_api::Cache,
+    key_space: String,
+    key_space_hash: String,
 }
 
 impl GitHubActionsCache {
     /// Creates a new `GitHubActionsCache` implicitly configured using the environment provided by
     /// GitHub Actions' runner.
-    pub fn new() -> Result<Self> {
+    pub fn new(key_space: &str) -> Result<Self> {
         Ok(Self {
             client: rust_actions_cache_api::Cache::new()?,
+            key_space: key_space.into(),
+            key_space_hash: Digest::reader_sync(
+                &mut format!("{}sccache gha v1", key_space).as_bytes(),
+            )
+            .unwrap(),
         })
     }
 }
@@ -40,7 +45,7 @@ impl GitHubActionsCache {
 #[async_trait]
 impl Storage for GitHubActionsCache {
     async fn get(&self, key: &str) -> Result<Cache> {
-        if let Some((_hit, blob)) = self.client.get_bytes(KEY_SPACE, &[key]).await? {
+        if let Some((_hit, blob)) = self.client.get_bytes(&self.key_space_hash, &[key]).await? {
             CacheRead::from(Cursor::new(blob)).map(Cache::Hit)
         } else {
             Ok(Cache::Miss)
@@ -56,7 +61,7 @@ impl Storage for GitHubActionsCache {
         // Eviction is handled automatically by GHA's cache.
         self.client
             .put_bytes(
-                KEY_SPACE,
+                &self.key_space_hash,
                 &format!("{}-{}", key, Uuid::new_v4()),
                 entry.finish()?.into(),
             )
@@ -65,7 +70,7 @@ impl Storage for GitHubActionsCache {
     }
 
     fn location(&self) -> String {
-        "GitHub Actions Cache".into()
+        format!("GitHub Actions Cache (key space {:?})", self.key_space)
     }
 
     async fn current_size(&self) -> Result<Option<u64>> {

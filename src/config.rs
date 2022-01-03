@@ -204,7 +204,9 @@ pub struct S3CacheConfig {
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct GHACacheConfig;
+pub struct GHACacheConfig {
+    pub key_space: String,
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum CacheType {
@@ -532,7 +534,9 @@ fn config_from_env() -> EnvConfig {
         .ok()
         .map(|_| AzureCacheConfig);
 
-    let gha = env::var("SCCACHE_GHA").ok().map(|_| GHACacheConfig);
+    let gha = env::var("SCCACHE_GHA").ok().map(|_| GHACacheConfig {
+        key_space: env::var("SCCACHE_GHA_KEY_SPACE").unwrap_or_else(|_| String::new()),
+    });
 
     let disk_dir = env::var_os("SCCACHE_DIR").map(PathBuf::from);
     let disk_sz = env::var("SCCACHE_CACHE_SIZE")
