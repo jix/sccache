@@ -668,6 +668,7 @@ where
     tx: mpsc::Sender<ServerMessage>,
 
     /// Information tracking how many services (connected clients) are active.
+    #[allow(dead_code)]
     info: ActiveInfo,
 }
 
@@ -1733,6 +1734,7 @@ struct WaitUntilZero {
 
 #[derive(Clone)]
 struct ActiveInfo {
+    #[allow(dead_code)]
     info: Arc<Mutex<Info>>,
 }
 

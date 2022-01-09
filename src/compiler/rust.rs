@@ -115,6 +115,7 @@ pub struct RustHasher {
 #[derive(Debug, Clone)]
 pub struct RustupProxy {
     proxy_executable: PathBuf,
+    #[allow(dead_code)]
     filetime: FileTime,
 }
 
@@ -162,16 +163,20 @@ pub struct RustCompilation {
     /// All arguments passed to rustc
     arguments: Vec<Argument<ArgData>>,
     /// The compiler inputs.
+    #[allow(dead_code)]
     inputs: Vec<PathBuf>,
     /// The compiler outputs.
     outputs: HashMap<String, PathBuf>,
     /// The directories searched for rlibs
+    #[allow(dead_code)]
     crate_link_paths: Vec<PathBuf>,
     /// The crate name being compiled.
     crate_name: String,
     /// The crate types that will be generated
+    #[allow(dead_code)]
     crate_types: CrateTypes,
     /// If dependency info is being emitted, the name of the dep info file.
+    #[allow(dead_code)]
     dep_info: Option<PathBuf>,
     /// The current working directory
     cwd: PathBuf,
