@@ -63,7 +63,7 @@ regex = "1"
 reqwest = { version = "0.11", features = ["json", "blocking"], optional = true }
 retry = "1"
 ring = { version = "0.16", optional = true, features = ["std"] }
-rust-actions-cache-api = { version = "0.1.1", optional = true }
+rust-actions-cache-api = { version = "0.2.0", optional = true }
 sha-1 = { version = "0.9", optional = true }
 sha2 = { version = "0.9", optional = true }
 serde = "1.0"

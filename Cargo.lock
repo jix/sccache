@@ -1710,9 +1710,9 @@ dependencies = [
 
 [[package]]
 name = "rust-actions-cache-api"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32769064f13af30193b9e75e09cf9f9c4b2b9e9ca8010e078098d21452525252"
+checksum = "8cebeeefbef97b02852d9e62a340b1d6e58c7165aaaf8ded923bfb7fc0c06ee1"
 dependencies = [
  "bytes 1.1.0",
  "reqwest",
